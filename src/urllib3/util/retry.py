@@ -323,7 +323,7 @@ class Retry(object):
 
         return True
 
-    def is_retry(self, method, status_code, has_retry_after=False):
+    def is_retry(self, method, response, has_retry_after=False):
         """ Is this method/status code retryable? (Based on whitelists and control
         variables such as the number of total retries to allow, whether to
         respect the Retry-After header, whether this header is present, and
@@ -333,14 +333,14 @@ class Retry(object):
         if not self._is_method_retryable(method):
             return False
 
-        if self.status_forcelist and status_code in self.status_forcelist:
+        if self.status_forcelist and response.status in self.status_forcelist:
             return True
 
         return (
             self.total
             and self.respect_retry_after_header
             and has_retry_after
-            and (status_code in self.RETRY_AFTER_STATUS_CODES)
+            and (response.status in self.RETRY_AFTER_STATUS_CODES)
         )
 
     def is_exhausted(self):
